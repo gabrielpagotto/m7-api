@@ -17,6 +17,7 @@ riotwatcher = "*"
 gunicorn = "*"
 psycopg2-binary = "*"
 python-jose = "*"
+pydantic = "*"
 
 [dev-packages]
 
