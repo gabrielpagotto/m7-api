@@ -15,6 +15,7 @@ httpx = "*"
 pytest = "*"
 riotwatcher = "*"
 gunicorn = "*"
+psycopg2-binary = "*"
 
 [dev-packages]
 
