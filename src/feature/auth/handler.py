@@ -40,7 +40,6 @@ async def signup(payload: SignupPayload, db: Session = Depends(get_db)):
 
     hashed_password = get_password_hash(payload.password)
     new_user = User(
-        name=payload.name,
         email=payload.email,
         hashed_password=hashed_password,
         league_of_legends_account=LeagueOfLegendsAccount(),
