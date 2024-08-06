@@ -1,4 +1,5 @@
 import uuid
+from typing import Optional
 from datetime import datetime
 from pydantic import BaseModel
 
@@ -9,7 +10,7 @@ class UserResponse(BaseModel):
     phone: str = None
     is_email_verified: bool
     is_admin: bool
-    league_of_legends_account: "LeagueOfLegendsAccountResponse" = None
+    league_of_legends_account: Optional["LeagueOfLegendsAccountResponse"]
     is_active: bool
     created_at: datetime
     updated_at: datetime
