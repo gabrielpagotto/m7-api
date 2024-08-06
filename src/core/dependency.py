@@ -7,7 +7,7 @@ from jose import jwt
 from src.core.database import SessionLocal
 from src.core.model import User
 from src.core.config import config
-from riotwatcher import LolWatcher, RiotWatcher
+from src.feature.riot.client import RiotClient, RiotServices
 
 
 def get_db():
@@ -45,9 +45,5 @@ def get_logged_admin(logged_user: User = Depends(get_logged_user)):
     return logged_user
 
 
-def get_riot_watcher():
-    return RiotWatcher(config.riot_api_key)
-
-
-def get_lol_watcher():
-    return LolWatcher(config.riot_api_key)
+def get_riot_services():
+    return RiotServices(config.riot_api_key, RiotClient.RegionalHost.AMERICAS, RiotClient.PlatformHost.BR1)

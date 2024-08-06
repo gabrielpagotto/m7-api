@@ -9,5 +9,6 @@ class UserResponse(BaseModel):
     email: str
     phone: str = None
     is_email_verified: bool
+    is_admin: bool
     created_at: datetime
     updated_at: datetime
