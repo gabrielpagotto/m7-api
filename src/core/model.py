@@ -1,4 +1,5 @@
 import uuid
+from src.core.util.guid import GUID
 from src.core.database import Base
 from sqlalchemy import Column, String, Boolean, DateTime, ForeignKey, func, Integer, BigInteger
 from sqlalchemy.orm import relationship, Mapped
@@ -8,7 +9,7 @@ from sqlalchemy.dialects.postgresql import UUID
 class User(Base):
     __tablename__ = "users"
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, index=True)
+    id = Column(GUID(), primary_key=True, default=uuid.uuid4, index=True)
     email: str = Column(String(), unique=True, index=True)
     hashed_password = Column(String())
     phone_number = Column(String(), nullable=True)
@@ -29,13 +30,13 @@ class User(Base):
 class LeagueOfLegendsAccount(Base):
     __tablename__ = "league_of_legends_accounts"
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, index=True)
+    id = Column(GUID(), primary_key=True, default=uuid.uuid4, index=True)
     lol_game_name = Column(String())
     lol_tag_line = Column(String())
     lol_puuid = Column(String())
     is_verified = Column(Boolean, default=False)
     verification_code = Column(String(6), nullable=True, default=None)
-    user_id = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=True)
+    user_id = Column(GUID(), ForeignKey("users.id"), nullable=True)
     user: Mapped["User"] = relationship("User", uselist=False, back_populates="league_of_legends_account")
     league_of_legends_summoner: Mapped["LeagueOfLegendsSummoner"] = relationship(
         "LeagueOfLegendsSummoner", uselist=False, back_populates="league_of_legends_account", cascade='all'
@@ -51,7 +52,7 @@ class LeagueOfLegendsAccount(Base):
 class LeagueOfLegendsSummoner(Base):
     __tablename__ = "league_of_legends_summoners"
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, index=True)
+    id = Column(GUID(), primary_key=True, default=uuid.uuid4, index=True)
     lol_id = Column(String())
     lol_account_id = Column(String())
     lol_puuid = Column(String())
@@ -59,7 +60,7 @@ class LeagueOfLegendsSummoner(Base):
     lol_revision_date = Column(BigInteger())
     lol_summoner_level = Column(Integer())
     league_of_legends_account_id = Column(
-        UUID(as_uuid=True),
+        GUID(),
         ForeignKey("league_of_legends_accounts.id"),
     )
     league_of_legends_account: Mapped["LeagueOfLegendsAccount"] = relationship(

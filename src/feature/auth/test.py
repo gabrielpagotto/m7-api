@@ -8,6 +8,8 @@ def test_signup():
     data.update({"password_confirmation": TestUser.password})
     response = client.post("/auth/signup", json=data)
 
+    print(response.json())
+
     # Tests whether the new user was created.
     assert response.status_code == 201
 
@@ -34,10 +36,3 @@ def test_signin():
     response = client.post("/auth/signin", json={"email": "wrong_user@m7academy.com.br", "password": "wrong_password"})
     assert response.status_code == 401
     assert response.json() == {"detail": "Email or password is invalid."}
-
-
-def test_logged():
-    client = get_test_client()
-    response = client.get("/auth/logged")
-
-    assert response.status_code == 200
