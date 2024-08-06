@@ -1,9 +1,9 @@
 from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
-from src.core.dependency import get_db, get_logged_user
+from src.core.dependency import get_db
 from fastapi.security import OAuth2PasswordRequestForm
-from src.core.model import User, LeagueOfLegendsAccount
+from src.core.model import User
 from src.core.util.password import get_password_hash, is_valid_password
 from src.core.util.jwt import create_access_and_refresh_tokens
 
@@ -17,6 +17,7 @@ router = APIRouter(prefix="/auth")
     "/signin",
     description="Authenticates the user and returns their access credentials.",
     response_model=AuthenticationResponse,
+    tags=["Auth"],
 )
 async def signin(payload: SigninPayload, db: Session = Depends(get_db)):
     user = db.query(User).filter(User.email == payload.email, User.is_active == True).first()
@@ -32,18 +33,14 @@ async def signin(payload: SigninPayload, db: Session = Depends(get_db)):
     description="Create a new user and return authorization tokens.",
     response_model=AuthenticationResponse,
     status_code=status.HTTP_201_CREATED,
+    tags=["Auth"],
 )
 async def signup(payload: SignupPayload, db: Session = Depends(get_db)):
-
     if db.query(User).filter(User.email == payload.email, User.is_active == True).first():
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Email already registered.")
 
     hashed_password = get_password_hash(payload.password)
-    new_user = User(
-        email=payload.email,
-        hashed_password=hashed_password,
-        league_of_legends_account=LeagueOfLegendsAccount(),
-    )
+    new_user = User(email=payload.email, hashed_password=hashed_password)
 
     db.add(new_user)
     db.commit()
@@ -53,7 +50,7 @@ async def signup(payload: SignupPayload, db: Session = Depends(get_db)):
     return AuthenticationResponse(access_token=access_token, refresh_token=refresh_token)
 
 
-@router.post("/refresh", description="", response_model=AuthenticationResponse, include_in_schema=False)
+@router.post("/refresh", description="", response_model=AuthenticationResponse, tags=["Auth"], include_in_schema=False)
 async def refresh(payload: RefreshPayload): ...
 
 

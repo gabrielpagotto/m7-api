@@ -8,7 +8,12 @@ from .responses import RiotSummonerResponse
 router = APIRouter(prefix="/riot")
 
 
-@router.get("/summoner/by-riot-id", response_model=RiotSummonerResponse, dependencies=[Depends(get_logged_user)])
+@router.get(
+    "/summoner/by-riot-id",
+    response_model=RiotSummonerResponse,
+    dependencies=[Depends(get_logged_user)],
+    tags=["Riot"],
+)
 async def get_summoner_by_riot_id(
     game_name: str = Query(), tag_line: str = Query(), riot_services: RiotServices = Depends(get_riot_services)
 ):

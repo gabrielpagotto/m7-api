@@ -1,6 +1,6 @@
-import uuid, enum
+import uuid
 from src.core.database import Base
-from sqlalchemy import Column, String, Boolean, DateTime, ForeignKey, func, Enum as SQLAEnum
+from sqlalchemy import Column, String, Boolean, DateTime, ForeignKey, func, Integer, BigInteger
 from sqlalchemy.orm import relationship, Mapped
 from sqlalchemy.dialects.postgresql import UUID
 
@@ -9,7 +9,6 @@ class User(Base):
     __tablename__ = "users"
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, index=True)
-    name = Column(String())
     email: str = Column(String(), unique=True, index=True)
     hashed_password = Column(String())
     phone_number = Column(String(), nullable=True)
@@ -27,22 +26,20 @@ class User(Base):
         return self.email
 
 
-class LeagueOfLegendsTagLine(enum.Enum):
-    BR1 = "br1"
-
-
 class LeagueOfLegendsAccount(Base):
     __tablename__ = "league_of_legends_accounts"
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, index=True)
-    lol_account_id = Column(String())
     lol_game_name = Column(String())
-    lol_tag_line = Column(SQLAEnum(LeagueOfLegendsTagLine), nullable=True)
+    lol_tag_line = Column(String())
     lol_puuid = Column(String())
     is_verified = Column(Boolean, default=False)
     verification_code = Column(String(6), nullable=True, default=None)
-    user_id = Column(UUID(as_uuid=True), ForeignKey("users.id"))
-    user: Mapped["User"] = relationship("User", back_populates="league_of_legends_account")
+    user_id = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=True)
+    user: Mapped["User"] = relationship("User", uselist=False, back_populates="league_of_legends_account")
+    league_of_legends_summoner: Mapped["LeagueOfLegendsSummoner"] = relationship(
+        "LeagueOfLegendsSummoner", uselist=False, back_populates="league_of_legends_account", cascade='all'
+    )
     is_active = Column(Boolean, default=True)
     created_at = Column(DateTime, default=func.now())
     updated_at = Column(DateTime, default=func.now(), onupdate=func.now())
@@ -55,6 +52,19 @@ class LeagueOfLegendsSummoner(Base):
     __tablename__ = "league_of_legends_summoners"
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, index=True)
+    lol_id = Column(String())
+    lol_account_id = Column(String())
+    lol_puuid = Column(String())
+    lol_profile_icon_id = Column(Integer())
+    lol_revision_date = Column(BigInteger())
+    lol_summoner_level = Column(Integer())
+    league_of_legends_account_id = Column(
+        UUID(as_uuid=True),
+        ForeignKey("league_of_legends_accounts.id"),
+    )
+    league_of_legends_account: Mapped["LeagueOfLegendsAccount"] = relationship(
+        "LeagueOfLegendsAccount", back_populates="league_of_legends_summoner"
+    )
     is_active = Column(Boolean, default=True)
     created_at = Column(DateTime, default=func.now())
     updated_at = Column(DateTime, default=func.now(), onupdate=func.now())
